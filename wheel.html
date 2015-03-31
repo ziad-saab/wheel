@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            overflow: hidden;
+            margin-top: 50px;
+        }
+        .leafs, .leaf {
+            -webkit-transform-origin: 50% 300%;
+        }
+        .leafs {
+            position: relative;
+            width: 100px;
+            height: 300px;
+            margin: 0 auto;
+            perspective: 500px;
+        }
+        .leaf {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 300px;
+            border: 1px solid black;
+            background-color: white;
+            transition: transform 250ms ease-in, box-shadow 250ms ease-in, opacity 250ms ease-in;
+            opacity: 0.5;
+        }
+        .leaf.top {
+            z-index: 10;
+            box-shadow: 0 0 30px 0px rgba(0,0,0, 0.8);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="leafs">
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+    <div class="leaf"></div>
+</div>
+<script src="https://code.jquery.com/jquery-1.11.2.js"></script>
+<script src="https://rawgit.com/jquery/jquery-mousewheel/master/jquery.mousewheel.js"></script>
+<script>
+    var leaves = $('.leaf');
+    var numLeaves = leaves.length;
+
+    var totalAngle = 120;
+
+    var halfAngle = totalAngle / 2;
+    var fromAngle = -halfAngle;
+    var toAngle = halfAngle;
+
+    var stepAngle = totalAngle / (numLeaves - 1);
+
+    var currentAngle = 0;
+
+    leaves.each(function(i) {
+        var $leaf = $(this);
+        var angle = ( stepAngle * i ) + fromAngle;
+
+        $leaf.css({
+            transform: 'rotateZ(' + angle + 'deg)',
+            backgroundColor: 'hsl(' + (360 * i / numLeaves) + ', 100%, 50%)'
+        });
+
+    });
+
+    $('body').on('mousewheel', function(e) {
+        var nudge = e.deltaY / 200;
+        currentAngle = Math.min(toAngle, Math.max(fromAngle, currentAngle + nudge));
+    });
+
+    var $leafs = $('.leafs');
+    var previousLeaf = -1;
+    function redraw() {
+        $leafs.css('transform', 'rotateZ(' + currentAngle + 'deg)');
+        var currentLeaf = Math.min(numLeaves - 1, Math.max(0, Math.round( ( -currentAngle + halfAngle ) / totalAngle * numLeaves )));
+        if (currentLeaf != previousLeaf) {
+            var $prev = $(leaves[previousLeaf]);
+            if ($prev.length) {
+                $prev.removeClass('top');
+                $prev[0].style.transform = $prev[0].style.transform.replace(' translateZ(10px)', '');
+            }
+            var $new = $(leaves[currentLeaf]);
+            $new.addClass('top').css($new.css('transform') + ' translateZ(10px)');
+            $new[0].style.transform = $new[0].style.transform + ' translateZ(10px)';
+
+            previousLeaf = currentLeaf;
+        }
+        requestAnimationFrame(redraw);
+    }
+    redraw();
+</script>
+</body>
+</html>
